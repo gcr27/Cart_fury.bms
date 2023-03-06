@@ -1,0 +1,32 @@
+
+open FDDE "db" 1
+get DIR_SIZE asize 0
+get DB_SIZE asize 1
+
+xmath DIR_FILES "DIR_SIZE / 44"
+
+for i = 0 < DIR_FILES
+    getdstring FILE_NAME 32
+    get FILE_CRC long
+    get ZERO long
+    get OFFSET long
+    
+    putarray 0 i FILE_NAME
+    putarray 1 i OFFSET
+next i
+
+for i = 0 < DIR_FILES
+    getarray NAME   0 i
+    getarray OFFSET 1 i
+    
+    xmath NEXT_INDEX "i+1"
+
+    if NEXT_INDEX < DIR_FILES
+        getarray NEXT_OFFSET 1 NEXT_INDEX
+    else
+        math NEXT_OFFSET = DB_SIZE
+    endif
+    
+    xmath SIZE "NEXT_OFFSET-OFFSET"
+    log NAME OFFSET SIZE 1
+next i
